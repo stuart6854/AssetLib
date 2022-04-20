@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32414.318
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AssetBaker", "AssetBaker\AssetBaker.vcxproj", "{CFAB2A99-7E30-40A4-8363-E5F12E493593}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AssetLib", "AssetLib\AssetLib.vcxproj", "{CE7C5B3A-7C1C-4022-AD97-366928FE4BF4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CFAB2A99-7E30-40A4-8363-E5F12E493593}.Debug|x64.ActiveCfg = Debug|x64
+		{CFAB2A99-7E30-40A4-8363-E5F12E493593}.Debug|x64.Build.0 = Debug|x64
+		{CFAB2A99-7E30-40A4-8363-E5F12E493593}.Release|x64.ActiveCfg = Release|x64
+		{CFAB2A99-7E30-40A4-8363-E5F12E493593}.Release|x64.Build.0 = Release|x64
+		{CE7C5B3A-7C1C-4022-AD97-366928FE4BF4}.Debug|x64.ActiveCfg = Debug|x64
+		{CE7C5B3A-7C1C-4022-AD97-366928FE4BF4}.Debug|x64.Build.0 = Debug|x64
+		{CE7C5B3A-7C1C-4022-AD97-366928FE4BF4}.Release|x64.ActiveCfg = Release|x64
+		{CE7C5B3A-7C1C-4022-AD97-366928FE4BF4}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1CA4C33F-5594-4511-9293-F419A8BD80F8}
+	EndGlobalSection
+EndGlobal
