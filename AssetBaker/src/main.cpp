@@ -16,6 +16,8 @@
 #include <glm/mat4x4.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/gtx/color_space.hpp>
+#include <glm/gtc/random.hpp>
 
 #include <iostream>
 #include <filesystem>
@@ -54,16 +56,34 @@
 constexpr int WIN_WIDTH = 1280;
 constexpr int WIN_HEIGHT = 720;
 
-float rawModelImportTime = 0.0f;
-
 constexpr float ORBIT_SPEED = 5.0f;
 constexpr float ZOOM_SPEED = 0.5f;
+
+enum eRenderMode : int
+{
+    eMaterial = 0,
+    eObjects,
+    eSubmeshes,
+    eCount,
+};
 
 std::unique_ptr<CameraOrbit> camera;
 
 bool firstClick = true;
 double lastX;
 double lastY;
+
+float rawModelImportTime = 0.0f;
+
+std::shared_ptr<Shader> materialShader;
+std::shared_ptr<Shader> colorShader;
+
+std::vector<std::shared_ptr<Mesh>> meshes;
+std::vector<std::shared_ptr<Material>> materials;
+std::vector<glm::vec3> colors;
+AssetBaker::ImporterModel importer;
+
+int renderMode;
 
 void CameraInput(GLFWwindow* window, CameraOrbit& camera)
 {
@@ -135,6 +155,65 @@ void RenderImGui()
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
+bool assetBakerOpen = true;
+void AssetBakerControlsGUI()
+{
+    ImGui::Begin("Asset Baker", &assetBakerOpen, ImGuiWindowFlags_AlwaysAutoResize);
+
+    ImGui::Text("Raw Import Time: %f", rawModelImportTime);
+    ImGui::Text("Mesh Count: %i", meshes.size());
+    ImGui::Text("Submesh Count: %i", importer.GetSubmeshCount());
+    ImGui::Text("Vertices: %i", importer.GetVertexCount());
+    ImGui::Text("Triangles: %i", importer.GetTriangleCount());
+
+    if (ImGui::Button("Open"))
+    {
+        auto selection = pfd::open_file("Choose model to open", ".").result();
+        if (!selection.empty())
+        {
+            auto file = selection[0];
+            std::cout << file << std::endl;
+
+            /*Serialisation::BinaryIn in("test.bin");
+            player.ReadBinary(in);
+            player.Print();*/
+
+            importer.Import(file);
+            meshes = importer.GetMeshes();
+            materials = importer.GetMaterials();
+            for (const auto& material : materials)
+            {
+                material->SetShader(materialShader);
+            }
+
+            colors.clear();
+            for (size_t i = 0; i < meshes.size(); i++)
+            {
+                float hue = glm::linearRand(0.0f, 360.0f);
+                float sat = 0.4f;
+                float value = 1.0f;
+                glm::vec3 color = glm::rgbColor(glm::vec3(hue, sat, value));
+                colors.push_back(color);
+            }
+        }
+    }
+
+    if (ImGui::Button("Bake"))
+    {
+        /*Serialisation::BinaryOut out("test.bin");
+        player.WriteBinary(out);*/
+    }
+
+    if (!meshes.empty())
+    {
+        // Mesh Controls
+        const char* elemNames[eCount] = { "Material", "Objects", "Submeshes" };
+        ImGui::Combo("RenderMode", &renderMode, elemNames, eCount);
+    }
+
+    ImGui::End();
+}
+
 int main()
 {
     std::cout << "Asset Baker" << std::endl;
@@ -148,17 +227,13 @@ int main()
     {
 #pragma region Object Creation
 
-        auto defaultShader = std::make_shared<Shader>("Assets/default.vert", "Assets/default.frag");
-
-        std::vector<std::shared_ptr<Mesh>> meshes;
-        std::vector<std::shared_ptr<Material>> materials;
+        materialShader = std::make_shared<Shader>("Assets/material.vert", "Assets/material.frag");
+        colorShader = std::make_shared<Shader>("Assets/color.vert", "Assets/color.frag");
 
         const glm::mat4 model = glm::mat4(1.0f);
 
         constexpr float aspectRatio = static_cast<float>(WIN_WIDTH) / WIN_HEIGHT;
         camera = std::make_unique<CameraOrbit>(60.0f, aspectRatio, 0.1f, 1000.0f);
-
-        AssetBaker::ImporterModel importer;
 
 #pragma endregion
 
@@ -172,7 +247,6 @@ int main()
         glEnable(GL_CULL_FACE);
         glEnable(GL_DEPTH_TEST);
 
-        bool assetBakerOpen = true;
         while (!window.ShouldClose())
         {
             /* Update */
@@ -189,43 +263,7 @@ int main()
 
             ImGui::ShowDemoWindow();
 
-            ImGui::Begin("Asset Baker", &assetBakerOpen, ImGuiWindowFlags_AlwaysAutoResize);
-
-            ImGui::Text("Raw Import Time: %f", rawModelImportTime);
-            ImGui::Text("Mesh Count: %i", meshes.size());
-            ImGui::Text("Submesh Count: %i", importer.GetSubmeshCount());
-            ImGui::Text("Vertices: %i", importer.GetVertexCount());
-            ImGui::Text("Triangles: %i", importer.GetTriangleCount());
-
-            if (ImGui::Button("Open"))
-            {
-                auto selection = pfd::open_file("Choose model to open", ".").result();
-                if (!selection.empty())
-                {
-                    auto file = selection[0];
-                    std::cout << file << std::endl;
-
-                    /*Serialisation::BinaryIn in("test.bin");
-                    player.ReadBinary(in);
-                    player.Print();*/
-
-                    importer.Import(file);
-                    meshes = importer.GetMeshes();
-                    materials = importer.GetMaterials();
-                    for (const auto& material : materials)
-                    {
-                        material->SetShader(defaultShader);
-                    }
-                }
-            }
-
-            if (ImGui::Button("Bake"))
-            {
-                /*Serialisation::BinaryOut out("test.bin");
-                player.WriteBinary(out);*/
-            }
-
-            ImGui::End();
+            AssetBakerControlsGUI();
 
             EndImGui();
 
@@ -237,10 +275,11 @@ int main()
             glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            defaultShader->Bind();
-            defaultShader->Set("model", model);
-            defaultShader->Set("projView", camera->GetProjView());
+            materialShader->Bind();
+            materialShader->Set("model", model);
+            materialShader->Set("projView", camera->GetProjView());
 
+            int meshIndex = 0;
             for (const auto& mesh : meshes)
             {
                 if (mesh == nullptr)
@@ -250,13 +289,34 @@ int main()
 
                 for (const auto& submesh : mesh->GetSubmeshes())
                 {
-                    const auto& material = materials[submesh.MaterialIndex];
-                    material->Bind();
+                    if (renderMode == eMaterial)
+                    {
+                        const auto& material = materials[submesh.MaterialIndex];
+                        material->Bind();
+                    }
+                    else if (renderMode == eObjects)
+                    {
+                        colorShader->Bind();
+                        colorShader->Set("model", model);
+
+                        colorShader->Set("projView", camera->GetProjView());
+                        colorShader->Set("color", colors[meshIndex]);
+                    }
+                    else if (renderMode == eSubmeshes)
+                    {
+                        colorShader->Bind();
+                        colorShader->Set("model", model);
+                        colorShader->Set("projView", camera->GetProjView());
+
+                        colorShader->Set("color", colors[meshIndex]);
+                    }
 
                     glDrawElements(GL_TRIANGLES, submesh.IndexCount, GL_UNSIGNED_INT, (GLvoid*)(submesh.BaseIndex * sizeof(uint32_t)));
                 }
 
                 // glDrawElements(GL_TRIANGLES, mesh->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
+
+                ++meshIndex;
             }
 
             RenderImGui();

@@ -10,6 +10,10 @@
 class Material
 {
 public:
+    auto GetShader() const -> const auto&
+    {
+        return _shader;
+    }
     void SetShader(const std::shared_ptr<Shader>& shader);
 
     void SetDiffuseColor(const glm::vec3 diffuseColor);
