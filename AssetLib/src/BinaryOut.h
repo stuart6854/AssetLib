@@ -18,8 +18,13 @@ namespace Serialisation
         void Write(const char* val);
         void Write(const std::string& val);
 
+        void Write(const uint8_t& val);
+        void Write(const uint16_t& val);
+        void Write(const uint32_t& val);
+        void Write(const uint64_t& val);
+
     private:
-        template<typename T>
+        template <typename T>
         void Write_Internal(const T& val);
 
     private:
@@ -31,4 +36,4 @@ namespace Serialisation
     {
         _file.write(reinterpret_cast<const char*>(&val), sizeof(T));
     }
-}
+}  // namespace Serialisation

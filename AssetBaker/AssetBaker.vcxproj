@@ -117,7 +117,6 @@
     <ClInclude Include="src\Core\Mesh.h" />
     <ClInclude Include="src\Core\Shader.h" />
     <ClInclude Include="src\Core\Texture.h" />
-    <ClInclude Include="src\Core\Vertex.h" />
     <ClInclude Include="src\Core\Window.h" />
     <ClInclude Include="src\imgui\imconfig.h" />
     <ClInclude Include="src\imgui\imgui.h" />

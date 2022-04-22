@@ -49,7 +49,7 @@ namespace AssetBaker
         _workingVertices.clear();
         _workingIndices.clear();
 
-        std::vector<Submesh> submeshes;
+        std::vector<AssetLib::Submesh> submeshes;
 
         // Process all the node's meshes (if any)
         for (size_t i = 0; i < node->mNumMeshes; i++)
@@ -76,9 +76,9 @@ namespace AssetBaker
         }
     }
 
-    auto ImporterModel::ProcessSubmesh(const aiMesh* mesh, const aiScene* scene)->Submesh
+    auto ImporterModel::ProcessSubmesh(const aiMesh* mesh, const aiScene* scene) -> AssetLib::Submesh
     {
-        Submesh submesh{};
+        AssetLib::Submesh submesh{};
         submesh.BaseVertex = _workingVertices.size();
         submesh.BaseIndex = _workingIndices.size();
         submesh.VertexCount = mesh->mNumVertices;
@@ -86,7 +86,7 @@ namespace AssetBaker
         // Vertices
         for (size_t i = 0; i < mesh->mNumVertices; i++)
         {
-            Vertex vertex;
+            AssetLib::Vertex vertex;
 
             auto vert = mesh->mVertices[i];
             vertex.position = { vert.x, vert.y, vert.z };
@@ -175,8 +175,8 @@ namespace AssetBaker
                 // TODO: Assign default blank texture
             }
 
-
             _materials.push_back(material);
         }
     }
-}
+
+}  // namespace AssetBaker

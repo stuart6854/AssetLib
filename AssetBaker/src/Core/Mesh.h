@@ -1,40 +1,52 @@
 ﻿#pragma once
 
-#include <string>
-
-#include "Vertex.h"
+#include <Vertex.h>
+#include <Mesh.h>
 
 #include <glad/glad.h>
 
+#include <string>
 #include <vector>
 
-
-struct Submesh
-{
-    uint32_t BaseVertex;
-    uint32_t BaseIndex;
-    uint32_t MaterialIndex;
-    uint32_t VertexCount;
-    uint32_t IndexCount;
-};
-
 /**
- * A mesh can have multiple submesh's (each submesh using a different material).
+ * A mesh is made up of multiple submeshes. Each submesh using a different material/textures.
  */
 class Mesh
 {
 public:
     ~Mesh();
 
-    auto GetName() const -> const std::string& { return _name; }
-    auto GetIndexCount() const -> uint32_t { return _indices.size(); }
-    auto GetSubmeshes() const -> const std::vector<Submesh>& { return _submeshes; }
+    auto GetName() const -> const std::string&
+    {
+        return _name;
+    }
+    auto GetIndexCount() const -> uint32_t
+    {
+        return _indices.size();
+    }
+    auto GetSubmeshes() const -> const std::vector<AssetLib::Submesh>&
+    {
+        return _submeshes;
+    }
 
-    void SetName(const std::string& name) { _name = name; }
+    auto GetVertices() const -> const auto&
+    {
+        return _vertices;
+    }
 
-    void SetVertices(const std::vector<Vertex>& vertices);
+    auto GetIndices() const -> const auto&
+    {
+        return _indices;
+    }
+
+    void SetName(const std::string& name)
+    {
+        _name = name;
+    }
+
+    void SetVertices(const std::vector<AssetLib::Vertex>& vertices);
     void SetTriangles(const std::vector<uint32_t>& triangles);
-    void SetSubmeshes(const std::vector<Submesh>& submeshes);
+    void SetSubmeshes(const std::vector<AssetLib::Submesh>& submeshes);
 
     void Apply();
 
@@ -43,9 +55,9 @@ public:
 private:
     std::string _name;
 
-    std::vector<Vertex> _vertices;
+    std::vector<AssetLib::Vertex> _vertices;
     std::vector<uint32_t> _indices;
-    std::vector<Submesh> _submeshes;
+    std::vector<AssetLib::Submesh> _submeshes;
 
     GLuint _VAO;
     GLuint _VBO;

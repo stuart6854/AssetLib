@@ -1,5 +1,6 @@
 #include "BinaryIn.h"
 #include "BinaryOut.h"
+#include "ExporterMesh.h"
 #include "MeshImport.h"
 
 #include "Core/Core.h"
@@ -202,6 +203,14 @@ void AssetBakerControlsGUI()
     {
         /*Serialisation::BinaryOut out("test.bin");
         player.WriteBinary(out);*/
+
+        AssetLib::Mesh mesh;
+        mesh.vertices = meshes[0]->GetVertices();
+        mesh.indices = meshes[0]->GetIndices();
+        mesh.submeshes = meshes[0]->GetSubmeshes();
+
+        AssetLib::ExporterMesh exporter;
+        exporter.Export(mesh, "test_mesh.mesh");
     }
 
     if (!meshes.empty())

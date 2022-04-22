@@ -165,10 +165,17 @@
   <ItemGroup>
     <ClCompile Include="src\BinaryIn.cpp" />
     <ClCompile Include="src\BinaryOut.cpp" />
+    <ClCompile Include="src\ExporterMesh.cpp" />
+    <ClCompile Include="src\ImporterMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\BinaryIn.h" />
     <ClInclude Include="src\BinaryOut.h" />
+    <ClInclude Include="src\Core.h" />
+    <ClInclude Include="src\ExporterMesh.h" />
+    <ClInclude Include="src\ImporterMesh.h" />
+    <ClInclude Include="src\Mesh.h" />
+    <ClInclude Include="src\Vertex.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

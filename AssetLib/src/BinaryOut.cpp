@@ -56,4 +56,24 @@ namespace Serialisation
         _file.write(val.c_str(), len);
     }
 
-}
+    void BinaryOut::Write(const uint8_t& val)
+    {
+        Write_Internal(val);
+    }
+
+    void BinaryOut::Write(const uint16_t& val)
+    {
+        Write_Internal(val);
+    }
+
+    void BinaryOut::Write(const uint32_t& val)
+    {
+        Write_Internal(val);
+    }
+
+    void BinaryOut::Write(const uint64_t& val)
+    {
+        Write_Internal(val);
+    }
+
+}  // namespace Serialisation
