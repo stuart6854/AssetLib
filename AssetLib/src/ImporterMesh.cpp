@@ -12,12 +12,12 @@ namespace AssetLib
         /* - Header - */
 
         // Signature
-        char signature[3];
+        std::string signature(3, ' ');
         signature[0] = in.Read<char>();
         signature[1] = in.Read<char>();
         signature[2] = in.Read<char>();
 
-        if (strcmp(signature, "RES") != 0)
+        if (strcmp(signature.c_str(), "RES") != 0)
         {
             // Error
             return {};
